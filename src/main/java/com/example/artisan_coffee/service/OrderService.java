@@ -1,16 +1,17 @@
 package com.example.artisan_coffee.service;
 
-import com.example.artisan_coffee.dto.AddressDTO;
 import com.example.artisan_coffee.dto.CartItemDTO;
 import com.example.artisan_coffee.dto.OrderDTO;
+import com.example.artisan_coffee.dto.OrderEventDTO;
 import com.example.artisan_coffee.entity.*;
+import com.example.artisan_coffee.mapper.OrderEventMapper;
+import com.example.artisan_coffee.producer.OrderPlacedEventProducer;
 import com.example.artisan_coffee.repository.OrderRepository;
 import com.example.artisan_coffee.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
 import java.time.LocalDate;
@@ -23,11 +24,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
     private final UserRepository userRepository;
+    private final OrderPlacedEventProducer eventProducer;
 
-    public OrderService(OrderRepository orderRepository, CartService cartService, UserRepository userRepository) {
+    public OrderService(
+            OrderRepository orderRepository, CartService cartService,
+            UserRepository userRepository, OrderPlacedEventProducer eventProducer
+    ) {
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.userRepository = userRepository;
+        this.eventProducer = eventProducer;
     }
 
     public Order placeOrder(OrderDTO orderDTO, Authentication authentication, HttpSession session) {
@@ -75,6 +81,14 @@ public class OrderService {
         Order saved = orderRepository.save(order);
 
         cartService.clearCart(session);
+
+        OrderEventDTO eventDTO = OrderEventMapper.toOrderEventDTO(saved);
+
+        try {
+            eventProducer.publishOrderPlacedEvent(eventDTO).get();
+        } catch (Exception e) {
+            System.err.println("Failed to publish order event: " + e.getMessage());
+        }
 
         return saved;
     }

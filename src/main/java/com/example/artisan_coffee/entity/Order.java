@@ -58,6 +58,10 @@ public class Order {
         this.user = user;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public LocalDate getOrderDate() {
         return orderDate;
     }
