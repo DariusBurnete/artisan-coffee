@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+</head>
+<body>
+<div th:if="${errorMessage}" style="color: red; margin-bottom: 1em;">
+    <p th:text="${errorMessage}"></p>
+</div>
+<form action="#" th:action="@{/checkout}" th:object="${orderDTO}" method="post">
+    <input type="text" th:field="*{customerName}" placeholder="Full Name" required/>
+    <input type="text" th:field="*{shippingAddress.street}" placeholder="Street" required/>
+    <input type="text" th:field="*{shippingAddress.city}" placeholder="City" required/>
+    <input type="text" th:field="*{shippingAddress.postalCode}" placeholder="Postal Code" required/>
+    <input type="text" th:field="*{shippingAddress.country}" placeholder="Country" required/>
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <button type="submit">Place Order</button>
+</form>
+
+
+</body>
+</html>

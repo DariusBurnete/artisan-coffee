@@ -42,7 +42,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin-panel","/h2-console/**", "/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/","/fragments/**", "/api/products/**", "/register", "/login", "/cart/**", "/css/**", "/js/**", "/uploads/**").permitAll()
+                        .requestMatchers("/","/checkout","/fragments/**", "/api/products/**", "/register", "/login", "/cart/**", "/css/**", "/js/**", "/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf ->csrf
