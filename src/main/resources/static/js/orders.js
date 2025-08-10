@@ -17,6 +17,9 @@ ordersList.addEventListener('click', function(event) {
         })
         .then(order => {
             document.getElementById('detailId').textContent = order.id;
+            const orderDate = new Date(order.orderDate);
+            document.getElementById('orderDate').textContent =
+                `${orderDate.getDate()}-${orderDate.getMonth() + 1}-${orderDate.getFullYear()}`;
             document.getElementById('detailCustomer').textContent = order.customerName;
             document.getElementById('detailAddress').textContent =
                 order.address.street + ', ' + order.address.city + ', ' + order.address.postalCode + ', ' + order.address.country;

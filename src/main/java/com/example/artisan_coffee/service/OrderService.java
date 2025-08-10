@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +69,8 @@ public class OrderService {
         } else {
             order.setUser(null);
         }
+
+        order.setOrderDate(LocalDate.now());
 
         Order saved = orderRepository.save(order);
 

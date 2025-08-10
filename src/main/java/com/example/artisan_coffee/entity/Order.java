@@ -1,6 +1,7 @@
 package com.example.artisan_coffee.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.time.LocalDate;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    private LocalDate orderDate;
 
     public Order() {}
 
@@ -53,5 +56,13 @@ public class Order {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
     }
 }
