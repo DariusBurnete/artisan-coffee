@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>My Orders</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link rel="stylesheet" th:href="@{/css/orders.css}">
+</head>
+<body>
+<header th:replace="~{fragments/navbar :: navbar}"></header>
+
+<h1>My Orders</h1>
+<div class="container">
+    <div class="orders-list">
+        <ul id="ordersList">
+            <li th:each="order : ${orders}"
+                th:text="'Order #' + ${order.id} + ' - ' + ${order.customerName} + ' ($' + ${order.totalPrice} + ')'"
+                th:data-order-id="${order.id}">
+            </li>
+        </ul>
+    </div>
+
+    <div class="order-details hidden" id="orderDetails">
+        <h2>Order Details</h2>
+        <p><strong>Order ID:</strong> <span id="detailId"></span></p>
+        <p><strong>Customer Name:</strong> <span id="detailCustomer"></span></p>
+        <p><strong>Shipping Address:</strong> <span id="detailAddress"></span></p>
+        <p><strong>Total Price:</strong> $<span id="detailTotal"></span></p>
+        <h3>Items:</h3>
+        <ul id="detailItems"></ul>
+    </div>
+</div>
+<script src="/js/orders.js"></script>
+</body>
+</html>

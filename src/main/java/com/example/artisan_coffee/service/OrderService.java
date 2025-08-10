@@ -76,5 +76,17 @@ public class OrderService {
         return saved;
     }
 
+    public List<Order> getOrdersByUserEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return orderRepository.findByUser(user);
+    }
+
+    public Order getOrderDetailsForUser(Long orderId, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return orderRepository.findByIdAndUser(orderId, user)
+                .orElseThrow(() -> new RuntimeException("Order not found or does not belong to user"));
+    }
 }
 

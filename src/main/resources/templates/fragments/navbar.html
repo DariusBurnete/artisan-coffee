@@ -14,11 +14,15 @@
       <div class="dropdown-content">
         <form th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
               action="/h2-console" method="get" target="_blank" style="margin-bottom: 8px;">
-          <button type="submit" class="admin-btn">H2 Console</button>
+          <button type="submit" class="regular-btn">H2 Console</button>
         </form>
 
         <form th:action="@{/admin}" method="get" sec:authorize="hasRole('ADMIN')">
-          <button type="submit" class="admin-btn">Admin Panel</button>
+          <button type="submit" class="regular-btn">Admin Panel</button>
+        </form>
+
+        <form th:action="@{/orders}" method="get" style="margin-top: 8px;">
+          <button type="submit" class="regular-btn">My Orders</button>
         </form>
 
         <form action="/logout" method="post" style="display:none;" id="logoutForm">

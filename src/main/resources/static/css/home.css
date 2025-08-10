@@ -111,7 +111,7 @@ main {
     display: flex;
 }
 
-.admin-btn {
+.regular-btn {
     background-color: #503939;
     color: white;
     border: none;
@@ -124,6 +124,6 @@ main {
     margin: 0;
 }
 
-.admin-btn:hover {
+.regular-btn:hover {
     background-color: #3b2a2a;
 }
