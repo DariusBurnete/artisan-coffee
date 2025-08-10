@@ -1,1 +1,2 @@
 The images folder path needs to be changed in the following files: Webconfig, ImageService, ProductService.
+For admin creation, in SecurityConfig move '"/h2-console/**"' from first '.requestMatchers' to second '.requestMatchers'.
