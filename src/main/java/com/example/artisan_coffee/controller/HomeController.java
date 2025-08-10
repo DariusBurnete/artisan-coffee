@@ -11,11 +11,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/")
-public class ProductController {
+public class HomeController {
 
     private final ProductService productService;
 
-    public ProductController(ProductService productService) {
+    public HomeController(ProductService productService) {
         this.productService = productService;
     }
 
@@ -41,6 +41,11 @@ public class ProductController {
         model.addAttribute("inStockOnly", inStockOnly);
 
         return "home";
+    }
+
+    @GetMapping("/navbarFrag")
+    public String showLogin() {
+        return "navbarFrag";
     }
 
     @GetMapping("/api/products/{id}")

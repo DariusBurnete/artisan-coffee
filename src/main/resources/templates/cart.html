@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<header th:replace="~{fragments/navbar :: navbar}"></header>
+
+<h2>Your Cart</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Product</th>
+    <th>Image</th>
+    <th>Quantity</th>
+    <th>Price</th>
+    <th>Total</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="item : ${items}">
+    <td><img th:src="@{/uploads/{filename}(filename=${item.imageUrl})}" style="max-width:50px;" alt=""/></td>
+    <td th:text="${item.name}"></td>
+    <td th:text="${item.price} + '€'"></td>
+    <td th:text="${item.quantity}"></td>
+    <td th:text="${item.price * item.quantity} + '€'"></td>
+    <td>
+      <form th:action="@{/cart/update/{id}(id=${item.productId})}" method="post" style="display:inline;">
+        <input type="number" name="quantity" min="1" th:value="${item.quantity}" style="width:50px;">
+        <button type="submit">Update</button>
+      </form>
+    </td>
+    <td>
+      <form th:action="@{/cart/remove/{id}(id=${item.productId})}" method="post">
+        <button type="submit">Remove</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<p>Total: <span th:text="${total} + '€'"></span></p>
+<form th:action="@{/cart/clear}" method="post">
+  <button type="submit">Clear Cart</button>
+</form>
+
+</body>
+</html>
