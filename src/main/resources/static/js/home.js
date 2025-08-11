@@ -3,16 +3,44 @@ function showProductDetails(element) {
     fetch(`/api/products/${id}`)
         .then(response => response.json())
         .then(product => {
+            const form = document.getElementById("cartForm");
+            form.action = `/cart/add/${product.id}`;
+            const quantityInput = form.querySelector('input[name="quantity"]');
+            const addToCartButton = form.querySelector('button[type="submit"]');
+
+            quantityInput.max = product.quantity;
+
+            if (product.quantity === 0) {
+                quantityInput.value = 0;
+                quantityInput.disabled = true;
+                addToCartButton.disabled = true;
+            } else {
+                quantityInput.disabled = false;
+                quantityInput.value = 1;
+                addToCartButton.disabled = false;
+
+                quantityInput.addEventListener('input', () => {
+                    let val = parseInt(quantityInput.value);
+                    const max = parseInt(quantityInput.max);
+
+                    if (isNaN(val) || val < 1) {
+                        quantityInput.value = 1;
+                        val = 1;
+                    } else if (val > max) {
+                        quantityInput.value = max;
+                        val = max;
+                    }
+
+                    addToCartButton.disabled = val < 1;
+                });
+            }
+
             document.getElementById("modalImage").src = `/uploads/${product.imageUrl}`;
             document.getElementById("modalName").innerText = product.name;
             document.getElementById("modalPrice").innerText = product.price + "€";
             document.getElementById("modalCategory").innerText = "Category: " + product.category;
             document.getElementById("modalDescription").innerText = product.description;
             document.getElementById("modalQuantity").innerText = "In stock: " + product.quantity;
-
-            const form = document.getElementById("cartForm");
-            form.action = `/cart/add/${product.id}`;
-
             document.getElementById("productModal").style.display = "block";
         });
 }

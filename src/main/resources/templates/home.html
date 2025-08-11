@@ -31,10 +31,14 @@
 
         <div class="product-list">
             <div th:each="product : ${products}" class="product-card"
-                 th:attr="data-id=${product.id}" onclick="showProductDetails(this)">
+                 th:attr="data-id=${product.id}" onclick="showProductDetails(this)" style="position: relative;">
                 <img th:if="${product.imageUrl != null}"
                      th:src="@{/uploads/{filename}(filename=${product.imageUrl})}"
                      alt="Product image" style="max-width:300px;"/><br/>
+                <div th:if="${product.quantity == 0}"
+                     style="position: absolute; top: 10px; left: 10px; background: gray; color: white; padding: 5px 10px; font-weight: bold; border-radius: 4px;">
+                    Out of Stock
+                </div>
                 <h3 th:text="${product.name}">Product Name</h3>
                 <p th:text="${product.price} + '€'">Price</p><br/><br/>
             </div>

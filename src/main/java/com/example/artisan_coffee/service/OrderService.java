@@ -9,8 +9,10 @@ import com.example.artisan_coffee.mapper.OrderEventMapper;
 import com.example.artisan_coffee.producer.OrderPlacedEventProducer;
 import com.example.artisan_coffee.producer.OrderFulfilledEventProducer;
 import com.example.artisan_coffee.repository.OrderRepository;
+import com.example.artisan_coffee.repository.ProductRepository;
 import com.example.artisan_coffee.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.core.Authentication;
@@ -28,19 +30,23 @@ public class OrderService {
     private final UserRepository userRepository;
     private final OrderPlacedEventProducer eventProducer;
     private final OrderFulfilledEventProducer orderFulfilledEventProducer;
+    private final ProductRepository productRepository;
 
     public OrderService(
             OrderRepository orderRepository, CartService cartService,
             UserRepository userRepository, OrderPlacedEventProducer eventProducer,
-            OrderFulfilledEventProducer orderFulfilledEventProducer
+            OrderFulfilledEventProducer orderFulfilledEventProducer,
+            ProductRepository productRepository
     ) {
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.userRepository = userRepository;
         this.eventProducer = eventProducer;
         this.orderFulfilledEventProducer = orderFulfilledEventProducer;
+        this.productRepository = productRepository;
     }
 
+    @Transactional
     public Order placeOrder(OrderDTO orderDTO, Authentication authentication, HttpSession session) {
         List<CartItemDTO> cartItems = cartService.getCartItems(session);
         if (cartItems.isEmpty()) {
@@ -82,6 +88,18 @@ public class OrderService {
         }
 
         order.setOrderDate(LocalDate.now());
+
+        for (OrderItem orderItem : orderItems) {
+            Product product = productRepository.findById(orderItem.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + orderItem.getProductId()));
+
+            int newStock = product.getQuantity() - orderItem.getQuantity();
+            if (newStock < 0) {
+                throw new IllegalStateException("Not enough stock for product: " + product.getName());
+            }
+            product.setQuantity(newStock);
+            productRepository.save(product);
+        }
 
         Order saved = orderRepository.save(order);
 

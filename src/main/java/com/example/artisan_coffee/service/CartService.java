@@ -1,7 +1,9 @@
 package com.example.artisan_coffee.service;
 
+import com.example.artisan_coffee.repository.ProductRepository;
 import com.example.artisan_coffee.dto.CartItemDTO;
 import com.example.artisan_coffee.dto.ProductDTO;
+import com.example.artisan_coffee.entity.Product;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +13,19 @@ import java.util.*;
 public class CartService {
 
     private static final String CART_SESSION_KEY = "cart";
+    private final ProductRepository productRepository;
+
+    public CartService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     @SuppressWarnings("unchecked")
     public void addToCart(ProductDTO product, int quantity, HttpSession session) {
         System.out.println("Method addToCart called");
+
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be at least 1");
+        }
 
         List<CartItemDTO> cart = (List<CartItemDTO>) session.getAttribute(CART_SESSION_KEY);
         if (cart == null) {
@@ -26,6 +37,13 @@ public class CartService {
                 .filter(item -> item.getProductId().equals(product.getId()))
                 .findFirst();
 
+        int existingQuantity = existingItem.map(CartItemDTO::getQuantity).orElse(0);
+        int newTotalQuantity = existingQuantity + quantity;
+
+        if (newTotalQuantity > product.getQuantity()) {
+            throw new IllegalArgumentException("Quantity exceeds available stock");
+        }
+
         if (existingItem.isPresent()) {
             existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
             System.out.println("Increased quantity of existing item: " + product.getName());
@@ -35,7 +53,8 @@ public class CartService {
                     product.getName(),
                     product.getImageUrl(),
                     product.getPrice(),
-                    quantity
+                    quantity,
+                    product.getQuantity()
             ));
             System.out.println("Added new item to cart: " + product.getName());
         }
@@ -71,6 +90,16 @@ public class CartService {
 
     @SuppressWarnings("unchecked")
     public void updateCartItem(Long productId, int quantity, HttpSession session) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be at least 1");
+        }
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (quantity > product.getQuantity()) {
+            throw new IllegalArgumentException("Quantity exceeds available stock");
+        }
+
         List<CartItemDTO> cart = (List<CartItemDTO>) session.getAttribute("cart");
         if (cart != null) {
             cart.stream()

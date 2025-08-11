@@ -43,9 +43,9 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/navbarFrag")
-    public String showLogin() {
-        return "navbarFrag";
+    @GetMapping("/navbar")
+    public String showNavbar() {
+        return "navbar";
     }
 
     @GetMapping("/api/products/{id}")
