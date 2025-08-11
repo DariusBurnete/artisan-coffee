@@ -3,9 +3,11 @@ package com.example.artisan_coffee.service;
 import com.example.artisan_coffee.dto.CartItemDTO;
 import com.example.artisan_coffee.dto.OrderDTO;
 import com.example.artisan_coffee.dto.OrderEventDTO;
+import com.example.artisan_coffee.dto.OrderFulfilledEventDTO;
 import com.example.artisan_coffee.entity.*;
 import com.example.artisan_coffee.mapper.OrderEventMapper;
 import com.example.artisan_coffee.producer.OrderPlacedEventProducer;
+import com.example.artisan_coffee.producer.OrderFulfilledEventProducer;
 import com.example.artisan_coffee.repository.OrderRepository;
 import com.example.artisan_coffee.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -25,15 +27,18 @@ public class OrderService {
     private final CartService cartService;
     private final UserRepository userRepository;
     private final OrderPlacedEventProducer eventProducer;
+    private final OrderFulfilledEventProducer orderFulfilledEventProducer;
 
     public OrderService(
             OrderRepository orderRepository, CartService cartService,
-            UserRepository userRepository, OrderPlacedEventProducer eventProducer
+            UserRepository userRepository, OrderPlacedEventProducer eventProducer,
+            OrderFulfilledEventProducer orderFulfilledEventProducer
     ) {
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.userRepository = userRepository;
         this.eventProducer = eventProducer;
+        this.orderFulfilledEventProducer = orderFulfilledEventProducer;
     }
 
     public Order placeOrder(OrderDTO orderDTO, Authentication authentication, HttpSession session) {
@@ -115,7 +120,20 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         order.setFulfilled(true);
         order.setFulfilledDate(LocalDate.now());
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        try {
+            OrderFulfilledEventDTO fulfilledEvent = new OrderFulfilledEventDTO(
+                    savedOrder.getId().toString(),
+                    savedOrder.getCustomerName(),
+                    savedOrder.getUser() != null ? savedOrder.getUser().getEmail() : null,
+                    savedOrder.getFulfilledDate()
+            );
+            orderFulfilledEventProducer.publishOrderFulfilledEvent(fulfilledEvent).get();
+        } catch (Exception e) {
+            System.err.println("Failed to publish fulfilled order event: " + e.getMessage());
+        }
+        return savedOrder;
     }
 
 }
