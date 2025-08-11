@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Cart</title>
     <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
 </head>
 <body>
 <header th:replace="~{fragments/navbar :: navbar}"></header>
@@ -17,6 +18,7 @@
     <th>Price</th>
     <th>Quantity</th>
     <th>Total</th>
+    <th colspan="2">Actions</th>
   </tr>
   </thead>
   <tbody>
@@ -30,12 +32,12 @@
       <form th:action="@{/cart/update/{id}(id=${item.productId})}" method="post" style="display:inline;">
         <input type="number" name="quantity" min="1" th:value="${item.quantity}" th:attr="data-max=${item.stock}"
                style="width:50px;">
-        <button type="submit">Update</button>
+        <button class="cart-button" type="submit">Update</button>
       </form>
     </td>
     <td>
       <form th:action="@{/cart/remove/{id}(id=${item.productId})}" method="post">
-        <button type="submit">Remove</button>
+        <button class="cart-button" type="submit">Remove</button>
       </form>
     </td>
   </tr>
@@ -43,10 +45,10 @@
 </table>
 <p>Total: <span th:text="${total} + '€'"></span></p>
 <form th:action="@{/cart/clear}" method="post">
-  <button type="submit">Clear Cart</button>
+  <button class="cart-button" type="submit" style="margin-bottom: 8px">Clear Cart</button>
 </form>
 <form action="/checkout" method="get">
-  <button type="submit">Checkout</button>
+  <button class="cart-button" type="submit">Checkout</button>
 </form>
 <script src="/js/cart.js"></script>
 </body>

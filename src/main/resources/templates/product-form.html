@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title th:text="${product.id} == null ? 'Add Product' : 'Edit Product'"></title>
+    <link rel="stylesheet" th:href="@{/css/product-form.css}">
 </head>
 <body>
 
@@ -11,30 +12,29 @@
 <th:block th:with="actionUrl=${product.id == null} ? '/admin/products/add' : '/admin/products/edit/' + ${product.id}">
     <form th:action="@{${actionUrl}}" method="post" enctype="multipart/form-data">
 
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-    <label>Name:</label><br/>
-    <input type="text" name="name" th:value="${product.name}" required /><br/><br/>
+        <label for="name">Name:</label>
+        <input id="name" type="text" name="name" th:value="${product.name}" required />
 
-    <label>Category:</label><br/>
-    <input type="text" name="category" th:value="${product.category}" required /><br/><br/>
+        <label for="category">Category:</label>
+        <input id="category" type="text" name="category" th:value="${product.category}" required />
 
-    <label>Price:</label><br/>
-    <input type="number" step="0.01" name="price" th:value="${product.price}" required /><br/><br/>
+        <label for="price">Price:</label>
+        <input id="price" type="number" step="0.01" name="price" th:value="${product.price}" required />
 
-    <label>Description:</label><br/>
-    <textarea name="description" rows="4" cols="50" required
-              th:text="${product.description}"></textarea><br/><br/>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required th:text="${product.description}"></textarea>
 
-    <label>Quantity:</label><br/>
-    <input type="number" name="quantity" th:value="${product.quantity}" required /><br/><br/>
+        <label for="quantity">Quantity:</label>
+        <input id="quantity" type="number" name="quantity" th:value="${product.quantity}" required />
 
-    <label>Image:</label><br/>
-    <input type="file" name="imageFile" accept="image/*" /><br/><br/>
+        <label for="imageFile">Image:</label>
+        <input id="imageFile" type="file" name="imageFile" accept="image/*" />
 
-    <img th:if="${product.imageUrl != null}" th:src="@{/uploads/{filename}(filename=${product.imageUrl})}" alt="Product image" style="max-width:200px;"/><br/><br/>
+        <img th:if="${product.imageUrl != null}" th:src="@{/uploads/{filename}(filename=${product.imageUrl})}" alt="Product image" />
 
-    <button type="submit">Submit</button>
+        <button type="submit">Submit</button>
     </form>
 </th:block>
 

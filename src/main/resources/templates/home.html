@@ -10,58 +10,61 @@
 <header th:replace="~{fragments/navbar :: navbar}"></header>
 
 <main>
-    <div class="product-container">
     <form class="filter-bar" th:action="@{/}" method="get">
         <input type="text" name="name" placeholder="Search by name" th:value="${name}">
-
         <select name="category" th:value="${category}">
             <option value="">All Categories</option>
             <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
         </select>
-
         <input type="number" name="minPrice" placeholder="Min Price" th:value="${minPrice}">
         <input type="number" name="maxPrice" placeholder="Max Price" th:value="${maxPrice}">
-
-        <label>
+        <label style="display: flex; align-items: center; gap: 5px;">
             <input type="checkbox" name="inStockOnly" th:checked="${inStockOnly == true}"> In Stock
         </label>
-
         <button type="submit">Filter</button>
     </form>
 
-        <div class="product-list">
-            <div th:each="product : ${products}" class="product-card"
-                 th:attr="data-id=${product.id}" onclick="showProductDetails(this)" style="position: relative;">
-                <img th:if="${product.imageUrl != null}"
-                     th:src="@{/uploads/{filename}(filename=${product.imageUrl})}"
-                     alt="Product image" style="max-width:300px;"/><br/>
-                <div th:if="${product.quantity == 0}"
-                     style="position: absolute; top: 10px; left: 10px; background: gray; color: white; padding: 5px 10px; font-weight: bold; border-radius: 4px;">
-                    Out of Stock
-                </div>
-                <h3 th:text="${product.name}">Product Name</h3>
-                <p th:text="${product.price} + '€'">Price</p><br/><br/>
-            </div>
-        </div>
-
-        <div id="productModal" style="display:none; position:fixed; top:50%; left:50%;
-    transform:translate(-50%, -50%); background:white; padding:20px; border:1px solid black;">
-            <button onclick="closeModal()">X</button>
-            <img id="modalImage" style="max-width:300px;"/>
-            <h3 id="modalName"></h3>
-            <p id="modalPrice"></p>
-            <p id="modalCategory"></p>
-            <p id="modalDescription"></p>
-            <p id="modalQuantity"></p>
-            <form id="cartForm" method="post">
-                <input type="number" name="quantity" value="1" min="1">
-                <input type="hidden" name="_csrf" th:value="${_csrf.token}" th:name="${_csrf.parameterName}" />
-                <button type="submit">Add to Cart</button>
-            </form>
+    <div class="product-list">
+        <div th:each="product : ${products}" class="product-card" th:attr="data-id=${product.id}" onclick="showProductDetails(this)" style="position: relative;">
+            <img th:if="${product.imageUrl != null}" th:src="@{/uploads/{filename}(filename=${product.imageUrl})}" alt="Product image"/>
+            <div th:if="${product.quantity == 0}" class="out-of-stock">Out of Stock</div>
+            <h3 th:text="${product.name}">Product Name</h3>
+            <p th:text="${product.price} + '€'">Price</p>
         </div>
     </div>
 
+    <div id="productModal" class="modal">
+        <button class="close-btn" onclick="closeModal()">✕</button>
+
+        <div class="modal-layout">
+            <div class="modal-top-row">
+                <div class="modal-left">
+                    <img id="modalImage" alt="Product image">
+                </div>
+
+                <div class="modal-right">
+                    <h3 id="modalName"></h3>
+                    <p id="modalPrice"></p>
+                    <p id="modalCategory"></p>
+                </div>
+            </div>
+
+            <div class="modal-description">
+                <p id="modalDescription"></p>
+            </div>
+
+            <div class="modal-left-under">
+                <p id="modalQuantity"></p>
+                <form id="cartForm" method="post">
+                    <input type="number" name="quantity" value="1" min="1">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}" th:name="${_csrf.parameterName}" />
+                    <button type="submit">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </main>
+
 <script src="/js/home.js"></script>
 </body>
 </html>

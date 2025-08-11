@@ -6,7 +6,7 @@ public class CartItemDTO {
     private final String imageUrl;
     private final double price;
     private int quantity;
-    private int stock;
+    private final int stock;
 
     public CartItemDTO(Long productId, String name, String imageUrl, double price, int quantity, int stock) {
         this.productId = productId;
