@@ -1,6 +1,9 @@
 package com.example.artisan_coffee.controller;
 
+import com.example.artisan_coffee.dto.OrderDTO;
 import com.example.artisan_coffee.dto.ProductDTO;
+import com.example.artisan_coffee.entity.Order;
+import com.example.artisan_coffee.service.OrderService;
 import com.example.artisan_coffee.service.ProductService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -17,15 +20,20 @@ import java.util.List;
 public class AdminProductController {
 
     private final ProductService productService;
+    private final OrderService orderService;
 
-    public AdminProductController(ProductService productService) {
+    public AdminProductController(ProductService productService, OrderService orderService) {
         this.productService = productService;
+        this.orderService = orderService;
     }
 
     @GetMapping
     public String adminPanel(Model model) {
         List<ProductDTO> products = productService.getAllProducts();
+        List<Order> orders = orderService.getUnfulfilledOrders();
+
         model.addAttribute("products", products);
+        model.addAttribute("orders", orders);
         return "admin-panel";
     }
 
@@ -69,6 +77,12 @@ public class AdminProductController {
     @PostMapping("/products/delete/{id}")
     public String deleteProduct(@PathVariable Long id) throws IOException {
         productService.deleteProduct(id);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/orders/{id}/fulfill")
+    public String fulfillOrder(@PathVariable Long id) {
+        orderService.markOrderFulfilled(id);
         return "redirect:/admin";
     }
 }

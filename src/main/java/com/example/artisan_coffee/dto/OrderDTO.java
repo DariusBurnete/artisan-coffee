@@ -1,5 +1,6 @@
 package com.example.artisan_coffee.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class OrderDTO {
@@ -9,15 +10,25 @@ public class OrderDTO {
     private List<CartItemDTO> items;
     private double totalPrice;
 
+    private LocalDate orderDate;
+    private boolean fulfilled;
+    private LocalDate fulfilledDate;
+
     public OrderDTO() {}
 
-    public OrderDTO(Long id, String customerName, AddressDTO shippingAddress,
-                    List<CartItemDTO> items, double totalPrice) {
+    public OrderDTO(
+            Long id, String customerName, AddressDTO shippingAddress,
+            List<CartItemDTO> items, double totalPrice, LocalDate orderDate, boolean fulfilled,
+            LocalDate fulfilledDate
+    ) {
         this.id = id;
         this.customerName = customerName;
         this.shippingAddress = shippingAddress;
         this.items = items;
         this.totalPrice = totalPrice;
+        this.orderDate = orderDate;
+        this.fulfilled = fulfilled;
+        this.fulfilledDate = fulfilledDate;
     }
 
     public Long getId() { return id; }
@@ -34,4 +45,28 @@ public class OrderDTO {
 
     public double getTotalPrice() { return totalPrice; }
     public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public boolean isFulfilled() {
+        return fulfilled;
+    }
+
+    public void setFulfilled(boolean fulfilled) {
+        this.fulfilled = fulfilled;
+    }
+
+    public LocalDate getFulfilledDate() {
+        return fulfilledDate;
+    }
+
+    public void setFulfilledDate(LocalDate fulfilledDate) {
+        this.fulfilledDate = fulfilledDate;
+    }
 }

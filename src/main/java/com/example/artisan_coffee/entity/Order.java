@@ -1,5 +1,6 @@
 package com.example.artisan_coffee.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.time.LocalDate;
 import jakarta.persistence.*;
@@ -23,11 +24,17 @@ public class Order {
 
     private double totalPrice;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     private LocalDate orderDate;
+
+    @Column(nullable = false)
+    private boolean fulfilled = false;
+
+    private LocalDate fulfilledDate;
 
     public Order() {}
 
@@ -68,5 +75,21 @@ public class Order {
 
     public void setOrderDate(LocalDate orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public boolean isFulfilled() {
+        return fulfilled;
+    }
+
+    public void setFulfilled(boolean fulfilled) {
+        this.fulfilled = fulfilled;
+    }
+
+    public LocalDate getFulfilledDate() {
+        return fulfilledDate;
+    }
+
+    public void setFulfilledDate(LocalDate fulfilledDate) {
+        this.fulfilledDate = fulfilledDate;
     }
 }

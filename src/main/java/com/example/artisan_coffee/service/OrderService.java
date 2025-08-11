@@ -105,5 +105,18 @@ public class OrderService {
         return orderRepository.findByIdAndUser(orderId, user)
                 .orElseThrow(() -> new RuntimeException("Order not found or does not belong to user"));
     }
+
+    public List<Order> getUnfulfilledOrders() {
+        return orderRepository.findByFulfilledFalse();
+    }
+
+    public Order markOrderFulfilled(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setFulfilled(true);
+        order.setFulfilledDate(LocalDate.now());
+        return orderRepository.save(order);
+    }
+
 }
 

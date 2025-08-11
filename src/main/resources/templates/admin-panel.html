@@ -27,7 +27,6 @@
         <td th:text="${product.quantity}">Quantity</td>
         <td>
             <a th:href="@{'/admin/products/edit/' + ${product.id}}">Edit</a>
-
             <form th:action="@{'/admin/products/delete/' + ${product.id}}" method="post" style="display:inline;">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <button type="submit" onclick="return confirm('Delete this product?')">Delete</button>
@@ -36,5 +35,31 @@
     </tr>
     </tbody>
 </table>
+
+<hr>
+
+<h1>Admin Panel - Unfulfilled Orders</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th><th>Customer</th><th>Date</th><th>Total</th><th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${orders}">
+        <td th:text="${order.id}"></td>
+        <td th:text="${order.customerName}"></td>
+        <td th:text="${order.orderDate}"></td>
+        <td th:text="${order.totalPrice}"></td>
+        <td>
+            <form th:action="@{'/admin/orders/' + ${order.id} + '/fulfill'}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit">Mark Fulfilled</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
 </body>
 </html>
