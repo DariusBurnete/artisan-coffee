@@ -6,8 +6,8 @@ import com.example.artisan_coffee.dto.OrderEventDTO;
 import com.example.artisan_coffee.dto.OrderFulfilledEventDTO;
 import com.example.artisan_coffee.entity.*;
 import com.example.artisan_coffee.mapper.OrderEventMapper;
-import com.example.artisan_coffee.producer.OrderPlacedEventProducer;
-import com.example.artisan_coffee.producer.OrderFulfilledEventProducer;
+import com.example.artisan_coffee.publisher.OrderFulfilledEventPublisher;
+import com.example.artisan_coffee.publisher.OrderPlacedEventPublisher;
 import com.example.artisan_coffee.repository.OrderRepository;
 import com.example.artisan_coffee.repository.ProductRepository;
 import com.example.artisan_coffee.repository.UserRepository;
@@ -28,21 +28,21 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
     private final UserRepository userRepository;
-    private final OrderPlacedEventProducer eventProducer;
-    private final OrderFulfilledEventProducer orderFulfilledEventProducer;
+    private final OrderPlacedEventPublisher orderPlacedEventPublisher;
+    private final OrderFulfilledEventPublisher orderFulfilledEventPublisher;
     private final ProductRepository productRepository;
 
     public OrderService(
             OrderRepository orderRepository, CartService cartService,
-            UserRepository userRepository, OrderPlacedEventProducer eventProducer,
-            OrderFulfilledEventProducer orderFulfilledEventProducer,
-            ProductRepository productRepository
-    ) {
+            UserRepository userRepository, OrderPlacedEventPublisher eventPublisher,
+            OrderFulfilledEventPublisher orderFulfilledEventPublisher,
+            ProductRepository productRepository,
+            OrderPlacedEventPublisher orderPlacedEventPublisher) {
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.userRepository = userRepository;
-        this.eventProducer = eventProducer;
-        this.orderFulfilledEventProducer = orderFulfilledEventProducer;
+        this.orderPlacedEventPublisher = orderPlacedEventPublisher;
+        this.orderFulfilledEventPublisher = orderFulfilledEventPublisher;
         this.productRepository = productRepository;
     }
 
@@ -108,7 +108,7 @@ public class OrderService {
         OrderEventDTO eventDTO = OrderEventMapper.toOrderEventDTO(saved);
 
         try {
-            eventProducer.publishOrderPlacedEvent(eventDTO).get();
+            orderPlacedEventPublisher.publish(eventDTO);
         } catch (Exception e) {
             System.err.println("Failed to publish order event: " + e.getMessage());
         }
@@ -147,7 +147,7 @@ public class OrderService {
                     savedOrder.getUser() != null ? savedOrder.getUser().getEmail() : null,
                     savedOrder.getFulfilledDate()
             );
-            orderFulfilledEventProducer.publishOrderFulfilledEvent(fulfilledEvent).get();
+            orderFulfilledEventPublisher.publish(fulfilledEvent);
         } catch (Exception e) {
             System.err.println("Failed to publish fulfilled order event: " + e.getMessage());
         }
